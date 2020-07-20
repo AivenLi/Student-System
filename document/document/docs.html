@@ -1,0 +1,375 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="description" content="">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>C语言学生信息管理系统说明文档</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/prettify.css">
+<link rel="stylesheet" href="css/default.css">
+</head>
+<body>
+<nav>
+  <div class="container">
+    <h1>文档说明</h1>
+</nav>
+<header>
+  <div class="container">
+    <h2 class="docs-header"> C语言学生信息管理系统</h2>
+  </div>
+</header>
+<section>
+  <div class="container">
+    <ul class="docs-nav" id="menu-left">
+      <li><strong>快速了解</strong></li>
+      <li><a href="#介绍" class=" ">介绍</a></li>
+      <li><a href="#用户管理结构图" class=" ">用户管理结构图</a></li>
+      <li><a href="#效果" class=" ">效果</a></li>
+      <li><a href="#使用" class=" ">使用</a></li>
+      <li class="数据结构"></li>
+      <li><strong>数据结构</strong></li>
+      <li><a href="#定义用户基本信息" class=" ">定义用户基本信息</a></li>
+      <li><a href="#定义教师信息" class=" ">定义教师信息</a></li>
+      <li><a href="#定义学生信息" class=" ">定义学生信息</a></li>
+      <li><a href="#定义班级信息" class=" ">定义班级信息</a></li>
+      <li><a href="#科目以及成绩" class=" ">科目以及成绩</a></li>
+      <li><strong>算法</strong></li>
+      <li><a href="#排序" class=" ">排序</a></li>
+      <li><a href="#替换链表节点" class=" ">替换链表节点</a></li>
+      <li><a href="#删除链表节点" class=" ">删除链表节点</a></li>
+      <li><strong>反馈</strong></string></li>
+      <li><a href="#反馈" class=" ">反馈</a></li>
+    </ul>
+    <div class="docs-content">
+      <h2> 快速了解</h2>
+      <h3 id="介绍">介绍</h3>
+      
+      <p> 这是一个用C语言编写的“学生信息管理系统”，该系统不仅能管理学生信息，同时还增加了用户管理、班级管理和学生管理。系统拥有一个默认账户：root，在系统初次运行时
+      	设定密码，该用户拥有最高权限，但限制于不能修改除了密码之外的其他信息。而普通用户（主要针对于教师），可以对自己的班级的学生进行“增删查改”操作，但是无权
+      	修改班级信息。当前版本只有这两类用户需要管理，在未来版本中将加入学生也可以作为用户登录。
+      </p>
+      <ul>
+        <li>初次运行，您将为其root账号创建密码，并需要重启程序。</li>
+        <li>管理用户，所有其他账户的创建和删除都必须由root用户操作。</li>
+        <li>管理班级，所有班级的创建和删除都必须由root用户操作，包括修改班级要学习的科目。</li>
+        <li>ID唯一，     一经创建，无法修改，同时唯一。在创建ID之后，如果是教师（用户），则系统自动在ID后补一个“1”，代表是教师（用户），
+        如果是学生，则会在ID后补一个“2”，代表是学生。添加教师（用户）或学生时不必考虑这个问题，由系统来区分。</li>
+        <li>文件加密，本系统使用文本文档来保存数据，同时进行加密处理。</li>
+        <li>控制台，使用默认的控制台，在后期的版本中将加入命令行，使用更为方便。</li>
+      </ul>
+      <h3 id="用户管理结构图">用户管理结构图</h3>
+      <ul>
+      	<div>用户管理的结构图大致如下图所示。图中在最顶层的为系统级用户root，它拥有最高权限，第二层的为教师（用户），可以管理对应的班级
+      	以及学生。</div>
+      	<img src="img/structureBlock.png"  /> 
+      </ul>
+      <h3 id="效果">效果</h3>
+      <ul>
+        <li>
+        	<div>初次运行</div>
+        	<img src="img/init.png" />
+        </li>
+        <li>
+        	<div>登录界面已经操作界面</div>
+        	<img src="img/login.png"  />
+        </li>
+        <li>
+        	<div>学生管理</div>
+        	<img src="img/sea_student.png" />
+        	<div>成绩排序</div>
+        	<img src="img/sort_student_for_gpa.PNG"  />
+        	<div>学号排序</div>
+        	<img src="img/sort_student_for_id.PNG" />
+        	<div>查找学生</div>
+        	<img src="img/search_student.PNG"  /> 
+        </li>
+        <li>更多功能请自行运行程序体验，本系统的功能并不丰富，如有意请自行添加。</li>
+      </ul>
+      <h3 id="使用">使用</h3>
+      <ul>
+      	<li>登录，登录系统时，除了root用户之外，其余用户的登录账号都只能使用id，而root用可以使用id或者名称。</li>
+      	<li>条件编译，代码中并没有许多条件编译，毕竟只是一个小系统，不做修改也不会有影响。主要针对文件加/解密、功能调整以及版本升级。
+      	<pre class="prettyprint"><code class="lang-C">#define NEED_ENCODE        /* 文件加密                                     */
+#define NEED_JUDGE         /* 申请内存时判断是否成功                       */
+#define NEED_DEBUG         /* 在程序开始前打印所有用户信息，调试时方便登录 */
+#define USE_SORT_CALLBACK  /* 排序使用回调函数方式                         */
+#define USE_GUI TRUE       /* 使用界面                                     */
+#define USE_CMD FALSE      /* 使用命令行                                   */</code></pre>"</li>
+      	<li>测试数据，在studata文件夹中建立了一些数据，供测试时使用，也可以将文件夹里的所有文件删除再自行测试。如果使用测试数据，可以把Debug
+      	模式打开，这样程序在登录前会打印出可登录的用户账号信息，不用每次都登录root查看。</li>
+      	<li>加密，如果不想让数据加密，可以取消"NEED_ENCODE"，但是之前加密过的数据读出来将会是乱码，需要重新建立数据，从不加密到加密也是如此。</li>
+      </ul>     
+      <h2>数据结构</h2>
+      <h3 id="定义用户基本信息">定义用户基本信息</h3>
+      <ul>
+      	<li>用户一般包含姓名、性别、年龄、id和密码。</li>
+        <li>代码展示</li>
+      </ul>   
+      <pre class="prettyprint"><code class="lang-C">
+struct people_base_info {
+	char name[PEOPLE_NAME_LENGTH+1]; /* 名字 */
+	char id[ID_LENGTH+1];            /* id  */
+	char passwd[PASSWD_LENGTH+1];    /* 密码 */
+	int age;                         /* 年龄 */
+	int gender;                      /* 性别 */
+}</code></pre>
+      <h3 id="定义教师信息">定义教师信息</h3>
+      <ul>
+      	<li>教师除了拥有基本信息之外，应该还有该教师管理的班级</li>
+        <li>代码展示</li>
+      </ul>   
+      <pre class="prettyprint"><code class="lang-C">struct people_base_info {
+	char name[PEOPLE_NAME_LENGTH+1]; /* 名字 */
+	char id[ID_LENGTH+1];            /* id   */
+	char passwd[PASSWD_LENGTH+1];    /* 密码 */
+	int age;                         /* 年龄 */
+	int gender;                      /* 性别 */
+};</code></pre>
+      <h3 id="定义学生信息">定义学生信息</h3>
+      <ul>
+      	<li>学生除了拥有基本信息之外，应该还有各科成绩，绩点（GPA）</li>
+        <li>代码展示</li>
+      </ul>   
+      <pre class="prettyprint"><code class="lang-C">struct student_s {
+	base_p base;    /* 基本信息             */
+	float gpa;      /* 绩点                 */
+	score_p score;  /* 各科目对应的成绩链表 */
+	student_p prev;
+	student_p next;
+};</code></pre>
+      <h3 id="定义班级信息">定义班级信息</h3>
+      <ul>
+      	<li>
+      		<div>班级应该包含以下信息</div>
+      		<li>班级名称</li>
+      		<li>班主任</li>
+      		<li>学生</li>
+      		<li>要学习的科目</li>
+      	</li>
+        <li>代码展示</li>
+      </ul>   
+      <pre class="prettyprint"><code class="lang-C">struct class_s {
+	char name[CLASS_NAME_LENGTH]; /* 班级名称             */
+	base_p teacher;               /* 班主任信息           */
+	subject_p subject;            /* 班级要学习的相关科目 */
+	student_p student;            /* 班级里的学生         */
+	class_p prev;
+	class_p next;
+};</code></pre>
+      <h3 id="科目以及成绩">科目以及成绩</h3>
+      <ul>
+      	<li>科目以及成绩分开定义，节约存储空间</li>   	
+        <li>代码展示</li>
+      </ul>   
+      <pre class="prettyprint"><code class="lang-C">struct subject_s {
+	char name[SUBJECT_NAME_LENGTH]; /* 科目名称 */
+	float credit;                   /* 科目学分 */
+	subject_p prev;
+	subject_p next;
+};
+struct score_s {
+	float score;  /* 分数 */
+	score_p prev;
+	score_p next;
+};</code></pre>
+    <h2>算法</h2>
+    <h3 id="排序">排序</h3>
+    <p>排序的算法很多，本系统采用最简单的“冒泡”排序算法，这种算法不够好，但本系统的重点是在链表的节点交换上和设计多种数据类型的排序模板上。</p>
+    <li>排序算法之回调方式, 下面的代码中采用的是回调方式，使用回调函数可以做大大地增加了代码的复用性行。</li>
+    <li>排序算法之正常方式，正常方式就是不同的类型都得写一个相应的函数，源代码中也提供了这种方式。</li>
+    <li>链表排序比数组排序难实现，主要体现在两个元素的交换上，也可以把链表变成数组在用数组的方法来排序，也就是指针数组，但这种方式也有弊端，
+    就是事先不知道链表的长度，很容易造成数组越界。</li>
+    <pre class=:prettyprint><code class="lang-C">/*
+ *  学生排序，回调方式
+ */
+class_p sort_student_template(class_p _class, _bool (*sort_ways)(void *a, void *b)) {
+
+	class_p temp;
+	student_p student;
+	student_p s_temp;
+	student_p s;
+
+	if ( _class == NULL || _class->student == NULL ) {
+
+		return NULL;
+	}
+	temp = copy_class(_class);
+	if ( temp == NULL ) {
+
+		return NULL;
+	}
+	/*
+	 *  排名
+	 */
+	student = temp->student;
+	s = student;
+	while ( student->next != NULL ) {
+
+		s_temp = student->next;
+		while ( s_temp != NULL ) {
+
+			if ( sort_ways(s_temp, student) ) {
+
+				swap_student_node(s_temp, student);
+				s = s_temp;
+				s_temp = student;
+				student = s;
+			}
+			s_temp = s_temp->next;
+		}
+		if ( student->next != NULL ) {
+
+			s = student;
+		}
+		student = student->next;
+	}
+	/*
+	 *  回到头结点
+	 */
+	while ( s->prev != NULL ) {
+
+		s = s->prev;
+	}
+	temp->student = s;
+	return temp;
+}
+_bool sort_for_gpa(void *a, void *b) {
+	return ( (student_p) a )->gpa > ( (student_p) b )->gpa ? TRUE : FALSE;
+}
+_bool sort_for_id(void *a, void *b) {
+	return strcmp(( (student_p) a)->base->id, ( (student_p) b )->base->id) > 0 ? TRUE : FALSE;
+}
+/*
+ *  交换student节点位置
+ */
+void swap_student_node(student_p a, student_p b) {
+	student_p a_next;
+	student_p a_prev;
+	if ( a->next == b ) { /* 相邻节点，a在前 */
+		if ( b->next != NULL ) {
+			b->next->prev = a;
+		}
+		if ( a->prev != NULL ) {
+			a->prev->next = b;
+		}
+		a->next = b->next;
+		b->prev = a->prev;
+		a->prev = b;
+		b->next = a;
+	} else if ( a->prev == b ) { /* 相邻节点，b在前 */
+		if ( a->next != NULL ) {
+			a->next->prev = b;
+		}
+		if ( b->prev != NULL ) {
+			b->prev->next = a;
+		}
+		b->next = a->next;
+		a->prev = b->prev;
+		b->prev = a;
+		a->next = b;
+	} else { /* 非相邻节点 */
+		if ( a->next != NULL ) {
+			a->next->prev = b;
+		}
+		if ( a->prev != NULL ) {
+			a->prev->next = b;
+		}
+		if ( b->next != NULL ) {
+			b->next->prev = a;
+		}
+		if ( b->prev != NULL ) {
+			b->prev->next = a;
+		}
+		a_next = a->next;
+		a_prev = a->prev;
+		a->next = b->next;
+		a->prev = b->prev;
+		b->next = a_next;
+		b->prev = a_prev;
+	}
+}</code></pre>
+    <h3 id="替换链表节点">替换链表节点</h3>
+    <pre class="prettyprint"><code class="lang-C">class_p replace_class_node(class_p head, class_p old_class, class_p new_class) {
+
+	if ( old_class == NULL ) { // 空链表
+
+		return head;
+	} else if ( old_class->prev == NULL && old_class->next == NULL ) { // 只有一个节点
+
+		head = new_class;
+		free_class(old_class);
+	} else if ( old_class->prev == NULL && old_class->next != NULL ) { // 头结点
+		
+		new_class->next = old_class->next;
+		old_class->next->prev = new_class;
+		old_class->next = NULL;
+		head = new_class;
+		free_class(old_class);
+	} else if ( old_class->prev != NULL && old_class->next == NULL ) { // 尾节点
+
+		old_class->prev->next = new_class;
+		new_class->prev = old_class->prev;
+		old_class->prev = NULL;
+		free_class(old_class);
+	} else if ( old_class->prev != NULL && old_class->next != NULL ) { // 中间节点
+		
+		old_class->prev->next = new_class;
+		old_class->next->prev = new_class;
+		new_class->next = old_class->next;
+		new_class->prev = old_class->prev;
+		old_class->next = NULL;
+		old_class->prev = NULL;
+		free_class(old_class);
+	}
+	return head;
+}</code></pre>
+	<h3 id="删除链表节点">删除链表节点</h3>
+	<p>删除链表中的某一节点</p>
+	<pre class="prettyprint"><code class="lang-C">class_p delete_class_node(class_p head, class_p node) {
+
+	if ( node == NULL ) {
+
+		return head;
+	}
+	if ( node->prev == NULL && node->next == NULL ) {
+		
+		free_class(node);
+		head = NULL;
+	} else if ( node->prev == NULL && node->next != NULL ) {
+
+		head = head->next;
+		head->prev = NULL;
+		node->next = NULL;
+		free_class(node);
+	} else if ( node->prev != NULL && node->next == NULL ) {
+
+		node->prev->next = NULL;
+		free_class(node);
+	} else if ( node->prev != NULL && node->next != NULL ) {
+
+		node->prev->next = node->next;
+		node->next->prev = node->prev;
+		node->next = NULL;
+		free_class(node);
+	}
+	return head;
+}</code></pre>
+	<h2>反馈</h2>
+	<h3 id="反馈">反馈</h3>
+	<ul>
+		<p>使用过程中如果出现错误，您可以记录错误然后反馈问题。</p>
+		<li>留言信箱: blkjaivenli@163.com</li>
+	</ul>
+<script src="js/jquery.min.js"></script> 
+<script src="js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript" src="js/prettify/prettify.js"></script> 
+<script src="js/layout.js"></script>
+ <script src="js/jquery.localscroll-1.2.7.js" type="text/javascript"></script>
+ <script src="js/jquery.scrollTo-1.4.3.1.js" type="text/javascript"></script>
+</body>
+</html>
